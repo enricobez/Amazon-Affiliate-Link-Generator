@@ -1,5 +1,6 @@
 # Amazon-Short-Link-Generator
-This is a simple tool to shorten Amazon url[^1]
+This is a simple tool to shorten Amazon url
+_It also add my affiliate link to it. I released the code for free so in this way you can support me a little, thanks!
 
 ### Usage
 1. Insert the Amazon URL 
@@ -20,6 +21,3 @@ License
 ----
 
 MIT
-
-
-[^1]: It also add my affiliate link to it. I released the code for free so in this way you can support me a little, thanks!
