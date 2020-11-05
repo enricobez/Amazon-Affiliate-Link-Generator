@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+   <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-23K7P5X1WD"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-23K7P5X1WD');
+    </script>
+
+    <!--==== FONTS ====-->
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="https://lp-cdn.lastpass.com/lporcamedia/2019-08-19--150547/dist/fonts/gibson-regular-webfont.woff">
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="https://lp-cdn.lastpass.com/lporcamedia/2019-08-19--150547/dist/fonts/gibson-light-webfont.woff">
+    <!--==== CSS ====-->
+    <link rel="stylesheet" type="text/css" href="./dist/css/tooltipster.bundle.min.css" />
+    <link rel="stylesheet" type="text/css" href="./dist/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-light.min.css" />
+    <link rel="stylesheet" type="text/css" href="./css/main.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous" />
+    <!--==== Javascript ====-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.0.min.js"></script>
+    <script type="text/javascript" src="./dist/js/tooltipster.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.tooltip').tooltipster({
+                theme: 'tooltipster-light',
+                side: 'bottom'
+            });
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TweenMax.min.js"></script>
+    <!--==== META ====-->
+    <meta charset="UTF-8">
+    <title>Amazon short link generator | Bez</title>
+    <meta name="description" content="Amazon short link generator. Short Amazon link online for free with this simple tool">
+    <!--==== Favicons things ====-->
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="manifest" href="images/site.webmanifest">
+    <meta name="theme-color" content="#ffffff">
+
+    <!--==== Style code ====-->
+    <style>
+        button {
+            outline: none; /* fix chrome unwatchable blue border on buttons */
+        }
+    </style>
+</head>
+
+
+<!--==== HTML body code ====-->
+<body>
+
+    <form id="generapass" name="generapass">
+        
+        <div class="section" style="margin:0.8em 0em">
+            <h1>Amazon short link generator</h1>
+            <label for="taggedurl">Original Amazon URL:</label>
+            <input class="form-control" id="input" value="" placeholder="Enter Amazon URL here" style="width: 100%;"/>
+            <input class="form-control" id="affiliateTag" type="hidden" value="enricobez77-21"/>
+            <input class="form-control" id="temp" type="hidden" value="" />
+        </div>
+
+        <div class="section">
+            <h1 class="h1-generate">
+                Generate
+            </h1>
+            <div class="pwd-p">
+                <div class="bottoni">
+                    <button type="button" id="convert" value="Generate" class="lp-pg-generated-password__icon lp-pg-generated-password__icon-generate tooltip" title="Generate">
+                    </button>
+                    <button type="button" value="Copy" id="copy-button" onclick="doCopy();" disabled="disabled" class="lp-pg-generated-password__icon lp-pg-generated-password__icon-copy tooltip" title="Copy">
+                    </button>
+                </div>
+                <span id="taggedurl"></span>
+            </div>
+
+        <hr>
+            <p class="lowlight" style="font-size:80%">© 2020 GNU GPLv3 - <a href="https://github.com/enricobez/" target="_blank"><i class="fab fa-github-alt"></i> Enrico Bez</a></p>
+
+        </div>
+
+        
+    </form>
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <p>Copied <i class="fas fa-check"></i></p>
+        </div>
+
+    </div>
+
+    <div id="myModal-error" class="modal-error">
+
+        <!-- Modal content -->
+        <div class="modal-content-error">
+            <p>Error! Please check inserted URL</p>
+        </div>
+
+    </div>
+
+    <script src="js/token.js"></script>
+
+    <script type="text/javascript">
+
+    /* Function for un-shorten url */
+    function unshortURL(pUrl) {
+
+        // AJAX call to unshort.php which make a GET request to unshorten.me API to unshorten the original (affiliated) link
+        // so I can get the full link in which I can replace the affiliate tag with mine 
+        $.ajax({
+            type : 'GET',
+            url : 'php/unshort.php',
+            dataType : 'text',
+            data: {
+                url : pUrl
+            },
+            success : function(data){                                               
+                unshortLink = data;
+            },
+            async: false // Need syncronous call because unshortLink wont be visible in the code if it run async
+        });
+    }
+
+    /* Function for short url */
+    function shortURL(lUrl){
+
+        // Token variable is declared in the token.js file
+        var accessToken = token;
+        var params = {
+            "long_url" : lUrl         
+        };
+
+        // AJAX call to Bit.ly API (v4) to shorten the affiliate link
+        $.ajax({
+            url: "https://api-ssl.bitly.com/v4/shorten",
+            cache: false,
+            dataType: "json",
+            method: "POST",
+            contentType: "application/json",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
+            },
+            data: JSON.stringify(params),
+            async: false // Need syncronous call because newShortLink wont be visible in the code if it run async
+        }).done(function(data) {
+            // console.log(data.link); // For debug
+            // I save the short link in a variable so it can be used in html
+            newShortLink = data.link; 
+
+        }).fail(function(data) {
+            // console.log(data);// For debug
+        });
+    }
+
+
+
+
+    </script>
+    
+    <!-- Tests things -->
+    <!-- <a href="#" onclick="javascript:shortURL()">Get Google</a>
+    <div id="contenido"></div> -->
+
+    <script src="plugins/selectOnFocus/jquery.selectOnFocus.min.js"></script>
+    <script src="js/enricobez-utils.js"></script>
+
+<script type="text/javascript">
+
+// Function to select the whole generated link on click
+$('#taggedurl').click(function() {
+    window.getSelection().selectAllChildren( document.getElementById("taggedurl") );
+});
+
+    // The main function that generate the link
+    $(document).ready(function() {
+
+        // First I disabled the copy button so it cannot be pressed if there's any generated link
+        var copyElem = document.getElementById("copy-button");
+        copyElem.disabled = true;
+       
+        // Get the affiliate tag that is in an hidden input
+        getAffiliateTag();
+
+        // On button click it run the following main code
+        $('#convert').click(function() {
+
+            // Now I can enable the copy button so it can be pressed to copy the generated link
+            var copyElem = document.getElementById("copy-button");
+            copyElem.disabled = false;
+
+            // Start the animation for the generate button
+            var el = $('#convert');
+            TweenMax.set(el, {
+                rotation: 0
+            });
+            TweenMax.from(el, .3, {
+                rotation: '-=180deg',
+            });
+
+
+            // Clear the field of the (previous) generated link just to be shure
+            clear();
+            // Get the affiliate tag that is in an hidden input (again, fix that)
+            var affiliateTag = getAffiliateTag();
+
+
+            shortLink = $('#input').val();  // Get the original link (can be short or full, with or without affiliate tag)
+            myJson ="https://unshorten.me/s/"+shortLink; // Prepare the link for the unshorten API
+            unshortURL(myJson); // Unshort the link
+            // $('#temp').val(unshortLink); // Store the unshorten link in an hidden input field (deprecated)
+            // var input = unshortLink; // Not neccessary passage
+            input = unshortLink.trim();
+            // check if is a valid URL (Catch in the future if not a valid link, maybe with alert o modal)
+            // and than process the URL to generate and shorten the generated link
+            if (isValidURL(input)) {
+                processUrl(input, affiliateTag);
+            }else{
+                doError();
+            }
+        });
+
+        
+        $('#taggedurl').selectOnFocus();
+        $('#input').selectOnFocus();
+
+        /* --- Field not active (for future upgrade) --- */
+        // $('#asin').selectOnFocus();
+        // $('#cleanurl').selectOnFocus();
+        // $('#linkhtml').selectOnFocus();
+        // $('#affiliateTag').selectOnFocus();
+        // $('#generators-category').addClass('active');
+    });
+
+    /* Function that return affiliate tag of a valid url*/
+    var getAffiliateTag = function() {
+        var affiliateTag = $('#affiliateTag').val();
+        if (!affiliateTag) {
+            affiliateTag = Utils.storage.getItem("affiliateTag");
+            if (!affiliateTag) {
+                affiliateTag = 'enricobez77-21';
+            }
+        }
+        Utils.storage.setItem("affiliateTag", affiliateTag);
+        // $('#affiliateTag').val(affiliateTag);
+        
+        return affiliateTag;
+    };
+
+    /* Function to process the input link */
+    var processUrl = function(url) {
+        var affiliateTag = getAffiliateTag(); // yes, again :(
+        var params = getUrlVars(url); // Get all the query string params of the url to extract the ASIN and the tag
+        var tagVal = params['tag'];
+        if (tagVal) {
+            url = url.replace('tag=' + tagVal, 'tag=' + affiliateTag); // replace the original tag with mine (evil)
+        } else if (url.indexOf('?') === -1) {
+            url = url + '?tag=' + affiliateTag; // If not present, insert mine
+        } else {
+            url = url.replace('?', '?tag=' + affiliateTag + '&');
+        }
+        var asin = Utils.amazon.extractASIN(url);
+        // Generate and short link in one shot ---> https://giphy.com/gifs/reaction-mood-KWhzYRArxnE9U0ioHW
+        shortURL(Utils.amazon.createCleanAffiliateURL(url, asin, affiliateTag))
+        $('#taggedurl').text(newShortLink); // Add the new link in the text field
+        
+        /* --- Field not active (for future upgrade) --- */
+        // $('#asin').val(asin);
+        // $('#taggedurl').text(url);
+        // $('#openurl').attr('href', url);
+        // $('#openurl').text('Open Link (in new window)');
+        // $('#linkhtml').val(getLinkCode(url));
+    };
+
+    /* Not used yet, for future upgrades */
+    var getLinkCode = function(url) {
+      var linkText = $('#linktext').val();
+      if(!linkText){
+        linkText = 'Click Here';
+      }
+      return '<a href="' + url + '" ' + ' title="' + linkText + '" alt="' + linkText   + '"'+ '>'+ linkText + '</a>';
+    };
+
+    /* Function to slit query string (&) params*/
+    var getUrlVars = function() {
+        var vars = [],
+            hash;
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        for (var i = 0; i < hashes.length; i++) {
+            hash = hashes[i].split('=');
+            vars.push(hash[0]);
+            vars[hash[0]] = hash[1];
+        }
+        return vars;
+    };
+
+    /* Function that check with regex if is a falid URL */
+    var isValidURL = function(s) {
+        var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
+        return regexp.test(s);
+    };
+
+    /* Function that clear previous generated link */
+    var clear = function() {
+        $('#taggedurl').val('');
+        //$('#temp').val(''); // Not used anymore
+
+
+        /* --- Field not active (for future upgrade) --- */
+        // $('#asin').val('');
+        // $('#cleanurl').val('');
+        // $('#openurl').attr('href', '');
+        // $('#openurl').text('');
+        // $('#linkhtml').text('');
+    };
+</script>
+
+
+<script>
+    function doError(){
+        /* Show a modal popup when URL is invalid*/
+        // Get the modal
+        var modalError = document.getElementById("myModal-error");
+
+        modalError.style.display = "block";
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onmousedown = function (event) {
+            if (event.target == modalError) {
+                modalError.style.display = "none";
+            }
+        }
+        // Same thing but on touch devices
+        window.ontouchend = function (event) {
+            if (event.target == modalError) {
+                modalError.style.display = "none";
+            }
+        }
+    }
+
+
+
+    /* Function that copy the generated link on copy button clic */
+    function doCopy() {
+        var container = document.querySelector("body");
+        var textarea = document.createElement("textarea");
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        container.insertBefore(textarea, container.firstChild);
+        textarea.value = document.getElementById("taggedurl").innerText;    
+        textarea.focus();
+        textarea.select();
+        document.execCommand("copy");
+        container.removeChild(textarea);
+
+        /* Show a modal popup when copied*/
+        // Get the modal
+        var modal = document.getElementById("myModal");
+
+        modal.style.display = "block";
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onmousedown = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+        // Same thing but on touch devices
+        window.ontouchend = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+    }
+</script>
+
+</body>
+</html>
