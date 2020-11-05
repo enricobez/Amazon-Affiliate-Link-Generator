@@ -3,9 +3,12 @@ This is a simple tool to shorten Amazon url
 
 _It also add my affiliate link to it. I released the code for free so in this way you can support me a little, thanks!_
 ### Usage
+0. Go [here](https://enricobez.it/amazon)
 1. Insert the Amazon URL 
 2. Click on the generate button
 3. See the magic
+
+
 
 ### Development
 
