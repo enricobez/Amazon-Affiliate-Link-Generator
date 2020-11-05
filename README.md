@@ -20,4 +20,4 @@ Write me at email@enricobez.it or open an issue here on GitHub
 License
 ----
 
-MIT
+GNU GPLv3
