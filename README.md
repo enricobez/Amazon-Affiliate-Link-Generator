@@ -1,5 +1,6 @@
 # Amazon-Short-Link-Generator
 This is a simple tool to shorten Amazon url
+
 _It also add my affiliate link to it. I released the code for free so in this way you can support me a little, thanks!
 
 ### Usage
