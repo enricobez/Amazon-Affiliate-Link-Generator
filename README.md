@@ -1,2 +1,2 @@
-# Amazon-Affiliate-Link-Generator
- Tool to generate Amazon (short) affiliate link
+# Amazon-Short-Link-Generator
+ Tool to generate short Amazon link 
